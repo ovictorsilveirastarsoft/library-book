@@ -3,7 +3,7 @@ services:
   web:
     build: .
     ports:
-      - '8000:8000'
+      - '3000:3000'
     volumes:
       - .:/code
     depends_on:
@@ -16,10 +16,3 @@ services:
       POSTGRES_DB: library_db
     ports:
       - '5432:5432'
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: teste
-    ports:
-      - '5050:80'

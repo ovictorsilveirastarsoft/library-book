@@ -1,26 +1,27 @@
-import { Library } from 'src/library/library.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Library } from 'src/library/library.entity'; // Relacionamento com a biblioteca (corredor)
+import { Category } from './categories.entity';
 
-@Entity('tab_book')
+@Entity('Tab_book')
 export class Book {
   @PrimaryGeneratedColumn()
   id_book: number;
 
   @Column()
-  Name_book: string;
+  name_book: string;
 
   @Column()
-  Category: string;
+  title: string;
 
   @Column()
-  Title: string;
+  author: string;
 
   @Column()
-  Author: string;
+  year_publication: number;
 
-  @Column()
-  Year_publication: number;
+  @ManyToOne(() => Category, (category) => category.book)
+  category: Category;
 
-  @OneToMany(() => Library, (library) => library.book)
-  libraries: Library[];
+  @ManyToOne(() => Library, (library) => library.book)
+  library: Library;
 }

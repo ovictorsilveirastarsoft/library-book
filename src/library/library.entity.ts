@@ -8,11 +8,11 @@ export class Library {
   @PrimaryGeneratedColumn()
   id_library: number;
 
-  @ManyToOne(() => Book, (book) => book.libraries)
+  @ManyToOne(() => Book, (book) => book.library)
   @JoinColumn({ name: 'id_book' })
   book: Book;
 
-  @ManyToOne(() => Corridor, (corridor) => corridor.libraries)
+  @ManyToOne(() => Corridor, (corridor) => corridor.library)
   @JoinColumn({ name: 'id_corridor' })
   corridor: Corridor;
 

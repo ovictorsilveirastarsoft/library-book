@@ -4,11 +4,11 @@ import { Book } from './book.entity';
 @Entity('tab_categories')
 export class Category {
   @PrimaryGeneratedColumn()
-  Id_category: number;
+  id_category: number;
 
   @Column()
-  Type_category: string;
+  type_category: string;
 
-  @OneToMany(() => Book, (book) => book.Category)
-  books: Book[];
+  @OneToMany(() => Book, (book) => book.category)
+  book: Book[];
 }

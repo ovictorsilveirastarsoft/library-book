@@ -1,11 +1,16 @@
-import { Module } from '@nestjs/common';
+import { Controller, Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { BookModule } from './book/book.module';
 import { LibraryModule } from './library/library.module';
-import { LibraryController } from './library/library.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
+import { BookController } from './book/book.controller';
+import { UserController } from './user/user.controller';
+import { LibraryController } from './library/library.controller';
+import { UserService } from './user/user.service';
+import { BookService } from './book/book.service';
+import { LibraryService } from './library/library.service';
 
 @Module({
   imports: [
@@ -24,7 +29,5 @@ import { AppController } from './app.controller';
     BookModule,
     LibraryModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

@@ -4,26 +4,22 @@ import {
   Column,
   ManyToOne,
   OneToMany,
-  JoinColumn,
 } from 'typeorm';
-import { Book } from './book.entity';
+import { Category } from './categories.entity';
 import { Library } from 'src/library/library.entity';
+// Relacionamento com a biblioteca
 
-@Entity('tab_corridor')
+@Entity('Tab_corridor')
 export class Corridor {
   @PrimaryGeneratedColumn()
   id_corridor: number;
 
-  @Column()
-  Category: string;
+  @ManyToOne(() => Category, (category) => category.id_category)
+  category: Category; // Cada corredor tem uma categoria
 
   @Column()
-  Location: string;
-
-  @ManyToOne(() => Book, (book) => book.libraries)
-  @JoinColumn({ name: 'id_book' })
-  book: Book;
+  location: string; // Localização do corredor (ex: Corredor A, Corredor B)
 
   @OneToMany(() => Library, (library) => library.corridor)
-  libraries: Library[];
+  library: Library[]; // Relacionamento com a biblioteca
 }
