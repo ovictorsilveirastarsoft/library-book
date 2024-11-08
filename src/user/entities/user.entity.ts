@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Library } from 'src/library/library.entity';
-@Entity('table_user')
+@Entity('tab_user')
 export class User {
   @PrimaryGeneratedColumn()
   id_user: number;

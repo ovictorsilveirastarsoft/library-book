@@ -9,7 +9,7 @@ import { Library } from 'src/library/library.entity';
 import { Category } from 'src/categories/entities/categories.entity';
 // Relacionamento com a biblioteca
 
-@Entity('Tab_corridor')
+@Entity('tab_corridor')
 export class Corridor {
   @PrimaryGeneratedColumn()
   id_corridor: number;

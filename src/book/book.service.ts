@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Book } from './entities/book.entity';
 import { Library } from 'src/library/library.entity';
 import { CreateBookDto } from './dto/create-book.dto';
-
+import { UpdateBookDto } from './dto/update-book.dto';
 import { Corridor } from './entities/corridor.entity';
 import { Category } from 'src/categories/entities/categories.entity';
 
@@ -24,87 +24,144 @@ export class BookService {
     private corridorRepository: Repository<Corridor>,
   ) {}
 
-  // Método para criar um livro e associá-lo a uma categoria e corredor
   async create(createBookDto: CreateBookDto): Promise<Book> {
     const { id_category, title, author, year_publication } = createBookDto;
 
-    // 1. Verifica se a categoria existe
+    // 1. Verifica se a categoria existe (certificando-se de que estamos obtendo uma instância completa da categoria)
     const category = await this.categoryRepository.findOne({
-      where: { id_category: id_category },
+      where: { id_category: id_category }, // Buscando a categoria com o id_category
     });
 
     if (!category) {
-      throw new Error('Categoria não encontrada');
+      throw new Error(
+        'Categoria não encontrada. Solicite para um administrador criar a categoria.',
+      );
     }
 
-    // 2. Verifica se o corredor para a categoria existe
+    console.log('Categoria encontrada:', category); // Adicionei para depuração
+
+    // 2. Verifica se o livro já existe na biblioteca com base no título
+    const existingBook = await this.bookRepository.findOne({
+      where: { title }, // Verifica se o título já está na biblioteca
+    });
+
+    if (existingBook) {
+      throw new Error('Este livro já existe na biblioteca.');
+    }
+
+    // 3. Verifica se o corredor existe para a categoria
     let corridor = await this.corridorRepository.findOne({
       where: { category: category },
     });
 
-    // Se não encontrar o corredor, cria um novo corredor para a categoria
+    // Se o corredor não existir, cria um novo corredor
     if (!corridor) {
-      // Criar um novo corredor para esta categoria
       corridor = this.corridorRepository.create({
-        category: category, // Associando a categoria ao corredor
-        location: 'Localização Padrão', // Defina uma localização padrão ou dinâmica
+        category: category, // Relaciona a categoria com o corredor
+        location: 'Localização padrão', // Pode ser uma localização dinâmica
       });
-      console.log('estou aqui no corredor', corridor);
-      await this.corridorRepository.save(corridor); // Salva o corredor
+      await this.corridorRepository.save(corridor);
     }
 
-    // 3. Cria o livro e associa à categoria
+    // 4. Cria o livro e associa à categoria corretamente
     const book = this.bookRepository.create({
       title,
       author,
       year_publication,
-      category, // Associa a categoria ao livro
+      category, // Passando a instância da categoria válida, não só o id
     });
 
-    // 4. Cria a entrada na tabela de Library para associar o livro ao corredor (e sua localização)
+    // 5. Salva o livro na tabela de livros (tab_book)
+    const savedBook = await this.bookRepository.save(book);
+
+    // 6. Cria a entrada na tabela de Library
     const library = this.libraryRepository.create({
-      book, // Relacionando o livro
-      corridor, // Relacionando ao corredor correto
-      user: null, // Inicialmente, o livro não está associado a nenhum usuário
+      book: savedBook, // Relaciona o livro pelo id_book
+      corridor,
+      user: null, // Inicialmente, o livro não está associado a um usuário
     });
 
-    // // 5. Salva a entrada na biblioteca
-    console.log('estou aqui na biblioteca', library);
-    console.log(
-      'ESTOU INSERINDO DADO library',
-      await this.libraryRepository.save(library),
-    );
+    await this.libraryRepository.save(library);
 
-    // 6. Salva o livro na tabela de livros
-    console.log('estou aqui no livro', book);
-    console.log('ESTOU INSERINDO DADOS', await this.bookRepository.save(book));
-    return this.bookRepository.save(book);
+    return savedBook;
   }
 
-  // Outros métodos para buscar, atualizar, remover livros
+  // Buscar todos os livros
   async findAll(): Promise<Book[]> {
-    return this.bookRepository.find({ relations: ['category', 'library'] }); // Inclui categoria e biblioteca
-  }
-
-  async findOne(id_book: number): Promise<Book> {
-    return this.bookRepository.findOne({
-      where: { id_book },
+    const books = await this.bookRepository.find({
       relations: ['category', 'library'],
     });
+
+    if (books.length === 0) {
+      throw new Error('Biblioteca vazia. Adicione um novo livro.');
+    }
+
+    return books;
   }
 
-  async update(id_book: number, updateBookDto: any): Promise<Book> {
+  // Buscar um livro por ID
+  async findOne(id_book: number): Promise<Book> {
     const book = await this.bookRepository.findOne({
       where: { id_book },
       relations: ['category', 'library'],
     });
+
     if (!book) {
       throw new Error('Livro não encontrado');
     }
-    return this.bookRepository.save({ ...book, ...updateBookDto });
+
+    return book;
   }
 
+  async update(id_book: number, updateBookDto: UpdateBookDto): Promise<Book> {
+    const { id_category } = updateBookDto;
+
+    // 1. Verifica se o livro existe
+    const book = await this.bookRepository.findOne({
+      where: { id_book },
+      relations: ['category', 'library'],
+    });
+
+    if (!book) {
+      throw new Error('Livro não encontrado');
+    }
+
+    // 2. Verifica se a categoria existe, caso o id_category seja fornecido
+    let category = book.category;
+    if (id_category) {
+      category = await this.categoryRepository.findOne({
+        where: { id_category },
+      });
+
+      if (!category) {
+        throw new Error(
+          'Categoria não encontrada. Solicite para um administrador criar a categoria.',
+        );
+      }
+    }
+
+    book.title = updateBookDto.title ?? book.title;
+    book.author = updateBookDto.author ?? book.author;
+    book.year_publication =
+      updateBookDto.year_publication ?? book.year_publication;
+    if (id_category) {
+      book.category = category;
+    }
+
+    return await this.bookRepository.save(book);
+  }
   async remove(id_book: number): Promise<void> {
-    await this.bookRepository.delete(id_book);
+    const book = await this.bookRepository.findOne({
+      where: { id_book },
+      relations: ['library'],
+    });
+
+    if (!book) {
+      throw new Error('Livro não encontrado');
+    } else {
+      console.log('Livro excluido com sucesso');
+      await this.libraryRepository.delete({ book: { id_book } });
+      await this.bookRepository.delete(id_book);
+    }
   }
 }

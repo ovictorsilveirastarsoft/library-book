@@ -1,14 +1,17 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
 import { Library } from 'src/library/library.entity'; // Relacionamento com a biblioteca (corredor)
 import { Category } from 'src/categories/entities/categories.entity';
 
-@Entity('Tab_book')
+@Entity('tab_book')
 export class Book {
   @PrimaryGeneratedColumn()
   id_book: number;
-
-  // @Column()
-  // name_book: string;
 
   @Column()
   title: string;
@@ -20,8 +23,9 @@ export class Book {
   year_publication: number;
 
   @ManyToOne(() => Category, (category) => category.book)
+  @JoinColumn({ name: 'id_category' })
   category: Category;
 
-  @ManyToOne(() => Library, (library) => library.book)
+  @ManyToOne(() => Library, (library) => library.book, { onDelete: 'CASCADE' })
   library: Library;
 }
