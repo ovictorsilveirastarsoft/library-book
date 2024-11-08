@@ -53,12 +53,18 @@ export class BookService {
     let corridor = await this.corridorRepository.findOne({
       where: { category: category },
     });
-
+    function getRandomLocation(): string {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+      const randomNumber = Math.floor(Math.random() * 10) + 1; // Altere o limite para aumentar a sequência numérica, se necessário
+      return `${randomLetter}${randomNumber}`;
+    }
     // Se o corredor não existir, cria um novo corredor
     if (!corridor) {
+      const location = getRandomLocation();
       corridor = this.corridorRepository.create({
         category: category, // Relaciona a categoria com o corredor
-        location: 'Localização padrão', // Pode ser uma localização dinâmica
+        location: location, // Define a localização aleatória
       });
       await this.corridorRepository.save(corridor);
     }
