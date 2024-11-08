@@ -5,8 +5,8 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Category } from './categories.entity';
 import { Library } from 'src/library/library.entity';
+import { Category } from 'src/categories/entities/categories.entity';
 // Relacionamento com a biblioteca
 
 @Entity('Tab_corridor')

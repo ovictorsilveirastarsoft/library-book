@@ -1,5 +1,5 @@
+import { Book } from 'src/book/entities/book.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Book } from './book.entity';
 
 @Entity('tab_categories')
 export class Category {

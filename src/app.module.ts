@@ -11,6 +11,7 @@ import { LibraryController } from './library/library.controller';
 import { UserService } from './user/user.service';
 import { BookService } from './book/book.service';
 import { LibraryService } from './library/library.service';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { LibraryService } from './library/library.service';
     UserModule,
     BookModule,
     LibraryModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}

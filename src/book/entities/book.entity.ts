@@ -1,14 +1,14 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Library } from 'src/library/library.entity'; // Relacionamento com a biblioteca (corredor)
-import { Category } from './categories.entity';
+import { Category } from 'src/categories/entities/categories.entity';
 
 @Entity('Tab_book')
 export class Book {
   @PrimaryGeneratedColumn()
   id_book: number;
 
-  @Column()
-  name_book: string;
+  // @Column()
+  // name_book: string;
 
   @Column()
   title: string;

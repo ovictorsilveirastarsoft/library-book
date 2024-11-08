@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm'; // Importa o TypeOrmModule
 import { BookService } from './book.service';
 import { BookController } from './book.controller';
-import { Book } from './entities/book.entity'; // Sua entidade Book
-import { Category } from './entities/categories.entity'; // Sua entidade Category
+import { Book } from './entities/book.entity'; // Sua entidade Book // Sua entidade Category
 import { Library } from 'src/library/library.entity'; // Sua entidade Library
 import { Corridor } from './entities/corridor.entity';
+import { Category } from 'src/categories/entities/categories.entity';
 
 @Module({
   imports: [
