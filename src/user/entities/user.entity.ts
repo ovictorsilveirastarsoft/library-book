@@ -24,8 +24,8 @@ export class User {
   // Usando o decorador BeforeInsert para hashear a senha antes de salvar
   @BeforeInsert()
   async hashPassword() {
-    const salt = await bcrypt.genSalt(10); // Gera o salt para a senha
-    this.password_user = await bcrypt.hash(this.password_user, salt); // Cria o hash da senha
+    const salt = await bcrypt.genSalt(10);
+    this.password_user = await bcrypt.hash(this.password_user, salt);
   }
 
   @OneToMany(() => Library, (library) => library.user)
