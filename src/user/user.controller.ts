@@ -10,6 +10,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -21,6 +22,8 @@ export class UserController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Retorna todos os usuarios' })
+  @ApiResponse({ status: 200, description: 'Retorna todos os usuarios' })
   findAll() {
     return this.userService.findAll();
   }
