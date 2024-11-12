@@ -5,11 +5,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SingInDTO } from 'src/user/dto/sign-in.dto';
+import { SingInDTO } from '../../user/dto/sign-in.dto';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
+import { User } from '../../user/entities/user.entity';
+import { UserService } from '../../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()

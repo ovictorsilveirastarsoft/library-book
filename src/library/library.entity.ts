@@ -1,6 +1,6 @@
-import { Book } from 'src/book/entities/book.entity';
-import { Corridor } from 'src/book/entities/corridor.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Book } from '../book/entities/book.entity';
+import { Corridor } from '../book/entities/corridor.entity';
+import { User } from '../user/entities/user.entity';
 import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('tab_library')

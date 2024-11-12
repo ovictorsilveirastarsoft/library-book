@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { find } from 'rxjs';
 
 @Injectable()
 export class UserService {
@@ -32,15 +33,29 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    const users = await this.userRepository.find(); 
+
+    if (users.length === 0) {
+      throw new NotFoundException('Usuários não encontrados');
+    }
+        return this.userRepository.find();
   }
 
   async findOneById(id_user: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id_user } });
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
     return this.userRepository.findOne({ where: { id_user } });
   }
 
-  async deleteUser(id_user: number): Promise<void> {
+  async deleteUser(id_user: number): Promise<string> {
+    const user = await this.userRepository.findOne({ where: { id_user } });
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
     await this.userRepository.delete(id_user);
+    throw new HttpException('Usuário deletado com sucesso!', HttpStatus.OK);
   }
 
   async update(id_user: number, updateUserDto: UpdateUserDto): Promise<User> {
@@ -59,9 +74,5 @@ export class UserService {
     await this.userRepository.update(id_user, updateUserDto);
 
     return this.userRepository.findOne({ where: { id_user } });
-  }
-
-  async remove(id_user: number): Promise<void> {
-    await this.userRepository.delete(id_user);
   }
 }

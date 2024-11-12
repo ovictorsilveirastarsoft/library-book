@@ -3,7 +3,7 @@ import { User } from '../entities/user.entity';
 import { LoginController } from './login.controller';
 import { forwardRef, Module } from '@nestjs/common';
 import { UserService } from '../user.service';
-import { SignInUseCase } from 'src/auth/useCases/sing-in.usecase';
+import { SignInUseCase } from '../../auth/useCases/sing-in.usecase';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

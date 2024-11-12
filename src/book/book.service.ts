@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Book } from './entities/book.entity';
-import { Library } from 'src/library/library.entity';
+import { Library } from '../library/library.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { Corridor } from './entities/corridor.entity';
-import { Category } from 'src/categories/entities/categories.entity';
+import { Category } from '../categories/entities/categories.entity';
 
 @Injectable()
 export class BookService {
