@@ -1,5 +1,6 @@
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   OneToMany,
@@ -7,6 +8,7 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Library } from 'src/library/library.entity';
+
 @Entity('tab_user')
 export class User {
   @PrimaryGeneratedColumn()
@@ -21,11 +23,13 @@ export class User {
   @Column()
   password_user: string;
 
-  // Usando o decorador BeforeInsert para hashear a senha antes de salvar
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
-    const salt = await bcrypt.genSalt(10);
-    this.password_user = await bcrypt.hash(this.password_user, salt);
+    if (this.password_user && !this.password_user.startsWith('$2a$')) { 
+      const salt = await bcrypt.genSalt(10);
+      this.password_user = await bcrypt.hash(this.password_user, salt);
+    }
   }
 
   @OneToMany(() => Library, (library) => library.user)

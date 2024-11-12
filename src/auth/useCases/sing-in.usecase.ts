@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SingInDTO } from 'src/user/dto/sign-in.dto';
-import { compare } from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
@@ -20,29 +20,23 @@ export class SignInUseCase {
     private jwtService: JwtService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
+
   async execute(data: SingInDTO) {
-    console.log('data', data);
-    // validate user
     const user = await this.userRepository.findOne({
       where: {
         email_user: data.name_user,
       },
-      select: ['password_user', 'id_user', 'email_user', 'name_user'],
     });
 
-    // nao - retornar erro
+
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Usuário não encontrado');
     }
-
-    // sim - valida senha
-    const isEqualPassword = await compare(
-      data.password_user,
-      user.password_user,
-    );
-
+    
+    const isEqualPassword = await bcrypt.compare(data.password_user, user.password_user);
+    
     if (!isEqualPassword) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Senha incorreta');
     }
 
     const payload = {
@@ -50,11 +44,12 @@ export class SignInUseCase {
       email: user.email_user,
       name: user.name_user,
     };
-    console.log('payload', payload);
 
-    const token = await this.jwtService.signAsync(payload);
+    const token = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET || 'default_secret_key',
+      expiresIn: '1h',
+    });
 
-    //sim - gerar token
     return {
       access_token: token,
     };

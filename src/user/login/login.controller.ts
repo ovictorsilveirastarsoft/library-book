@@ -8,7 +8,7 @@ export class LoginController {
 
   @Post('/login')
   async login(@Body() loginDto: SingInDTO) {
-    console.log(loginDto);
+    
     const token = await this.singInUseCase.execute(loginDto);
     return token;
   }
