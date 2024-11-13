@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SingInDTO } from '../../user/dto/sign-in.dto';
+import { SignInDTO } from '../../user/dto/sign-in.dto';
 import * as bcrypt from 'bcryptjs';
 import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
@@ -21,7 +21,7 @@ export class SignInUseCase {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async execute(data: SingInDTO) {
+  async execute(data: SignInDTO) {
     const user = await this.userRepository.findOne({
       where: {
         email_user: data.name_user,

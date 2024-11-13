@@ -1,5 +1,6 @@
 import {
   Delete,
+  ForbiddenException,
   Get,
   Injectable,
   NotFoundException,
@@ -10,16 +11,26 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Category } from './entities/categories.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   @Post()
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(createCategoryDto: CreateCategoryDto ): Promise<Category> {
+    const superUser = await this.userRepository.findOne({
+      where: { super_user: true },
+    });
+
+    if (!superUser) {
+      throw new ForbiddenException('Somente superusuários podem criar categorias');
+    }
     const existingCategory = await this.categoryRepository.findOne({
       where: { type_category: createCategoryDto.type_category },
     });

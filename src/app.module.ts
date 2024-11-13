@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CategoriesModule } from './categories/categories.module';
 import { LoginModule } from './user/login/login.module';
+import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { LoginModule } from './user/login/login.module';
     LibraryModule,
     CategoriesModule,
     LoginModule,
+    KafkaModule,
   ],
 })
 export class AppModule {}

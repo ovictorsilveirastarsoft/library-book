@@ -23,6 +23,9 @@ export class User {
   @Column()
   password_user: string;
 
+  @Column()
+  super_user: boolean; 
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {

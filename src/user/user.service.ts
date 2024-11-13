@@ -5,16 +5,17 @@ import * as bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { find } from 'rxjs';
+import { ProducerService } from 'src/kafka/producer.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private readonly producerService: ProducerService
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { name_user, email_user, password_user } = createUserDto;
+    const { name_user, email_user, password_user, super_user } = createUserDto;
 
     const existingUser = await this.userRepository.findOne({
       where: { email_user },
@@ -28,11 +29,20 @@ export class UserService {
       name_user,
       email_user,
       password_user: hashedPassword,
+      super_user: super_user,
     });
     return this.userRepository.save(user);
   }
 
   async findAll(): Promise<User[]> {
+    await this.producerService.produce(
+      { topic: 'users',
+         messages: [
+          { 
+            value: 'Todos os usuarios encontrados!' 
+          }
+        ] 
+      });
     const users = await this.userRepository.find(); 
 
     if (users.length === 0) {
@@ -42,6 +52,7 @@ export class UserService {
   }
 
   async findOneById(id_user: number): Promise<User> {
+    
     const user = await this.userRepository.findOne({ where: { id_user } });
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
